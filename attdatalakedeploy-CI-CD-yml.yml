@@ -1,0 +1,63 @@
+# Variable Group 'VG-DEV' was defined in the Variables tab
+
+trigger:
+- none
+variables:
+  vmImageName: 'ubuntu-latest'
+resources:
+  repositories:
+  - repository: self
+    type: git
+    ref: main
+jobs:
+- deployment: Deploy
+  displayName: Self hosted Agent job
+  environment: dev_env
+  pool:
+    name: DBPP Self Hosted Agent Pool
+    vmImage: $(vmImageName)
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - checkout: self
+        - task: AzureCLI@2
+          displayName: Artifact Deploy To Azure Container
+          inputs:
+          connectedServiceNameARM: 3bccb0ba-4d77-4745-9059-84bb4afbdadd
+          scriptType: bash
+          scriptLocation: inlineScript
+          inlineScript: >-
+        echo "azcopy login with SP"
+
+
+        export AZCOPY_SPA_CLIENT_SECRET=$(client-secret)
+
+        /home/datalake1/azcopy/azcopy_linux_amd64_10.10.0/azcopy login --service-principal --application-id $(clientid) --tenant-id=$(tenentid)
+
+
+        echo "azcopy Artifact to ADLS"
+
+
+        /home/datalake1/azcopy/azcopy_linux_amd64_10.10.0/azcopy copy "$(System.DefaultWorkingDirectory)/nwrlc/" "https://$(target-storage).dfs.core.windows.net/$(target-container)/DBPP/" --include-path "code/bin/py/Sparkpostprocess.py;code/bin/py/customPurge.py"  --recursive=true
+
+
+        echo "azcopy Artifact to ADLS2"
+
+
+        /home/datalake1/azcopy/azcopy_linux_amd64_10.10.0/azcopy copy "$(System.DefaultWorkingDirectory)/nwrlc/" "https://$(target-storage).dfs.core.windows.net/$(target-container)/DBPP/" --include-path "config/postprocessConf.json;config/columnMapping.csv"  --recursive=true
+      addSpnToEnvironment: true
+      useGlobalConfig: true
+  - task: SSH@0
+    displayName: Run shell commands on Target machine
+    inputs:
+      sshEndpoint: 07ca7f68-1c70-4a47-a3e7-412f00c3629c
+      commands: "mkdir -p /home/datalake1/Environment/dev/dbpp/common; \nmkdir -p /home/datalake1/Environment/dev/dbpp/nwrlc; \nmkdir -p /home/datalake1/Environment/dev/dbpp/scalaApp; "
+  - task: CopyFilesOverSSH@0
+    displayName: Artifact Deploy to Azure VM
+    inputs:
+      sshEndpoint: 07ca7f68-1c70-4a47-a3e7-412f00c3629c
+      sourceFolder: code
+      targetFolder: /home/datalake1/Environment/dev/dbpp/nwrlc
+  
+...
