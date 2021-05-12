@@ -12,7 +12,6 @@ stages:
       displayName: 'Self hosted Agent job'
       pool:
         name:'DBPP Self Hosted Agent Pool'
-        vmImage:$(vmImageName)
       environment: 'dev_env'
       strategy:
         runOnce:
