@@ -2,7 +2,6 @@
 trigger:
 - none
 variables:
-  vmImageName: 'ubuntu-latest'
   -group: 'VG-DEV'
 stages:
   - stage: 'DeployDEV'
