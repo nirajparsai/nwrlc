@@ -5,43 +5,39 @@ variables:
   vmImageName: 'ubuntu-latest'
   -group: 'VG-DEV'
 stages:
-  - stage:'DeployDEV'
-    displayName:'Deploy to DEV environment'
+  - stage: 'DeployDEV'
+    displayName: 'Deploy to DEV environment'
     jobs:
-    - deployment:Deploy
-      displayName:'Self hosted Agent job'
+    - deployment: Deploy
+      displayName: 'Self hosted Agent job'
       pool:
         name:'DBPP Self Hosted Agent Pool'
         vmImage:$(vmImageName)
-      environment:'dev_env'
+      environment: 'dev_env'
       strategy:
         runOnce:
           deploy:
             steps:
               - script:
               - checkout: self
-               - task: AzureCLI@2
+              - task: AzureCLI@2
                 displayName: Artifact Deploy To Azure Container
                 inputs:
                   connectedServiceNameARM: 3bccb0ba-4d77-4745-9059-84bb4afbdadd
                   scriptType: bash
                   scriptLocation: inlineScript
                   inlineScript: >-
-                     echo "azcopy login with SP"
+                echo "azcopy login with SP"
 
 
-                    export AZCOPY_SPA_CLIENT_SECRET=$(client-secret)
+                export AZCOPY_SPA_CLIENT_SECRET=$(client-secret)
 
-                    /home/datalake1/azcopy/azcopy_linux_amd64_10.10.0/azcopy login --service-principal --application-id $(clientid) --tenant-id=$(tenentid)
-
-
-                    echo "azcopy Artifact to ADLS"
+                /home/datalake1/azcopy/azcopy_linux_amd64_10.10.0/azcopy login --service-principal --application-id $(clientid) --tenant-id=$(tenentid)
 
 
-                 /home/datalake1/azcopy/azcopy_linux_amd64_10.10.0/azcopy copy "$(System.DefaultWorkingDirectory)/nwrlc/" "https://$(target-storage).dfs.core.windows.net/$(target-container)/DBPP/" --include-path "code/bin/py/Sparkpostprocess.py;code/bin/py/customPurge.py"  --recursive=true
+                echo "azcopy Artifact to ADLS"
 
 
-                 echo "azcopy Artifact to ADLS2"
-
-
-               /home/datalake1/azcopy/azcopy_linux_amd64_10.10.0/azcopy copy "$(System.DefaultWorkingDirectory)/nwrlc/" "https://$(target-storage).dfs.core.windows.net/$(target-container)/DBPP/" --include-path "config/postprocessConf.json;config/columnMapping.csv"  --recursive=true
+                /home/datalake1/azcopy/azcopy_linux_amd64_10.10.0/azcopy copy "$(System.DefaultWorkingDirectory)/nwrlc/" "https://$(target-storage).dfs.core.windows.net/$(target-container)/DBPP/" --include-path "code/bin/py/Sparkpostprocess.py;code/bin/py/customPurge.py"  --recursive=true
+                echo "azcopy Artifact to ADLS2"
+                /home/datalake1/azcopy/azcopy_linux_amd64_10.10.0/azcopy copy "$(System.DefaultWorkingDirectory)/nwrlc/" "https://$(target-storage).dfs.core.windows.net/$(target-container)/DBPP/" --include-path "config/postprocessConf.json;config/columnMapping.csv"  --recursive=true
