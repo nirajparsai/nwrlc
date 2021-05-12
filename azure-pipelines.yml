@@ -10,7 +10,7 @@ stages:
     - deployment: Deploy
       displayName: 'Self hosted Agent job'
       pool:
-        name:'DBPP Self Hosted Agent Pool'
+        name:DBPP Self Hosted Agent Pool
       environment: 'dev_env'
       strategy:
         runOnce:
