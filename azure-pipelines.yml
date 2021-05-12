@@ -1,6 +1,6 @@
 # Variable Group 'VG-DEV' was defined in the Variables tab
 trigger:
-- none
+- main
 variables:
   -group: 'VG-DEV'
 stages:
@@ -10,7 +10,7 @@ stages:
     - deployment: Deploy
       displayName: 'Self hosted Agent job'
       pool:
-        name:DBPP Self Hosted Agent Pool
+       vmImage: 'ubuntu-latest'
       environment: 'dev_env'
       strategy:
         runOnce:
