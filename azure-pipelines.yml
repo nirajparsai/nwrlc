@@ -7,6 +7,10 @@ stages:
     displayName: 'Deploy to DEV environment'
     variables:
       -group: 'VG-DEV'
+    pool:
+       name: 'DBPP Self Hosted Agent Pool'
+       demands:
+          - agent.name -equals dbppselfhosted
     jobs:
     - job: 'downloadazurekeyvault'
       steps:
@@ -17,11 +21,8 @@ stages:
           SecretsFilter: '*'
           RunAsPreJob: true
     - deployment: Deploy
+      dependsOn: downloadazurekeyvault
       displayName: 'Self hosted Agent job'
-      pool:
-       name: 'DBPP Self Hosted Agent Pool'
-       demands:
-          - agent.name -equals dbppselfhosted
       environment: 'dev_env'
       strategy:
         runOnce:
