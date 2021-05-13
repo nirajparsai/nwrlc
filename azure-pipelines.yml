@@ -8,6 +8,11 @@ stages:
     variables:
       -group: 'VG-DEV'
     jobs:
+    - job: Test
+      steps:
+       - script: echo $(clientid)
+       - script: echo $(System.DefaultWorkingDirectory)
+       - script: echo $(target-storage)
     - deployment: Deploy
       displayName: 'Self hosted Agent job'
       pool:
