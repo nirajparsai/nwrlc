@@ -3,7 +3,7 @@ name: Release-$(date:yyyyMMdd)-$(rev:r)
 
 resources:
   repositories:
-  - repository: nwrlc
+  - repository: self
     type: git
     endpoint: NpGit
     name: nwrlc
