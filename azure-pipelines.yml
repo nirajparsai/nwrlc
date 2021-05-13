@@ -5,6 +5,7 @@ resources:
   repositories:
   - repository: nwrlc
     type: github
+    endpoint: NpGit
     name: nwrlc/nwrlc
     trigger:
     - main
