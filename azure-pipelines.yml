@@ -16,7 +16,9 @@ stages:
     - deployment: Deploy
       displayName: 'Self hosted Agent job'
       pool:
-       vmImage: 'ubuntu-latest'
+       name: 'DBPP Self Hosted Agent Pool'
+       demands:
+          - agent.name -equals dbppselfhosted
       environment: 'dev_env'
       strategy:
         runOnce:
