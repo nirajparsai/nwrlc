@@ -16,7 +16,7 @@ stages:
       steps:
        - script: echo $(System.DefaultWorkingDirectory)
     - deployment: Deploy
-      dependsOn: downloadazurekeyvault
+      dependsOn: 'test'
       displayName: 'Self hosted Agent job'
       environment: 'dev_env'
       strategy:
