@@ -2,6 +2,11 @@
 name: Release-$(date:yyyyMMdd)-$(rev:r)
 trigger:
 - main
+resources:
+  repositories:
+  - repository: nwrlc
+    type: git
+    name: nwrlc
 stages:
   - stage: 'DeployDEV'
     displayName: 'Deploy to DEV environment'
