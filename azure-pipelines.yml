@@ -70,7 +70,7 @@ stages:
                     /tws/*.shed*
                   targetFolder: '/home/datalake1/Environment/dev/dbpp/nwrlc'
                   readyTimeout: '20000'
-  - stage: 'Deploy Stage'
+  - stage: 'DeployStage'
     displayName: 'Deploy to Stage environment'
     variables:
       -group: 'VG-STG'
