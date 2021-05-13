@@ -1,15 +1,13 @@
 # Variable Group 'VG-DEV' was defined in the Variables tab
 name: Release-$(date:yyyyMMdd)-$(rev:r)
-trigger:
-- main
+
 resources:
   repositories:
-  - repository: self
+  - repository: nwrlc
     type: github
     name: nwrlc/nwrlc
-steps:
-- checkout: self
-- checkout: MyGitHubRepo
+    trigger:
+    - main
 stages:
   - stage: 'DeployDEV'
     displayName: 'Deploy to DEV environment'
