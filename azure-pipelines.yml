@@ -4,7 +4,7 @@ trigger:
 - main
 resources:
   repositories:
-  - repository: nwrlc
+  - repository: self
     type: git
     name: nwrlc
 stages:
