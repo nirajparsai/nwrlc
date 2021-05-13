@@ -5,8 +5,11 @@ trigger:
 resources:
   repositories:
   - repository: self
-    type: git
-    name: nwrlc
+    type: github
+    name: nwrlc/nwrlc
+steps:
+- checkout: self
+- checkout: MyGitHubRepo
 stages:
   - stage: 'DeployDEV'
     displayName: 'Deploy to DEV environment'
