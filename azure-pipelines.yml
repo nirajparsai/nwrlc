@@ -6,7 +6,7 @@ resources:
   - repository: nwrlc
     type: github
     endpoint: NpGit
-    name: nwrlc/nwrlc
+    name: nwrlc
     trigger:
     - main
 stages:
