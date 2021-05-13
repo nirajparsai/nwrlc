@@ -89,6 +89,12 @@ stages:
         runOnce:
           deploy:
             steps:
+              - task: AzureKeyVault@1
+                inputs:
+                  azureSubscription: 'AZDatalakeServiceConnection'
+                  KeyVaultName: 'dbppdemokeyvault'
+                  SecretsFilter: '*'
+                  RunAsPreJob: true
               - task: AzureCLI@2
                 displayName: 'Artifact Deploy To Azure Container'
                 inputs:
