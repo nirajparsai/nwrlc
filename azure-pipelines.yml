@@ -8,11 +8,14 @@ stages:
     variables:
       -group: 'VG-DEV'
     jobs:
-    - job: Test
+    - job: 'downloadazurekeyvault'
       steps:
-       - script: echo $(clientid)
-       - script: echo $(System.DefaultWorkingDirectory)
-       - script: echo $(target-storage)
+      - task: AzureKeyVault@1
+        inputs:
+          azureSubscription: 'AZDatalakeServiceConnection'
+          KeyVaultName: 'dbppdemokeyvault'
+          SecretsFilter: '*'
+          RunAsPreJob: true
     - deployment: Deploy
       displayName: 'Self hosted Agent job'
       pool:
@@ -20,6 +23,65 @@ stages:
        demands:
           - agent.name -equals dbppselfhosted
       environment: 'dev_env'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - task: AzureCLI@2
+                displayName: 'Artifact Deploy To Azure Container'
+                inputs:
+                  azureSubscription: 'AZDatalakeServiceConnection'
+                  scriptType: 'bash'
+                  scriptLocation: 'inlineScript'
+                  inlineScript: |
+                    echo "azcopy login with SP"
+                    
+                    
+                                      export AZCOPY_SPA_CLIENT_SECRET= $(client-secret)
+                    
+                                      azcopy login --service-principal --application-id $(clientid) --tenant-id=$(tenentid)
+                    
+                    
+                                      echo "azcopy Artifact to ADLS"
+                    
+                    
+                                      azcopy copy "$(System.DefaultWorkingDirectory)/nwrlc/" "https://$(target-storage).dfs.core.windows.net/$(target-container)/DBPP/" --include-path "code/bin/py/Sparkpostprocess.py;code/bin/py/customPurge.py"  --recursive=true
+                                      echo "azcopy Artifact to ADLS2"
+                                      azcopy copy "$(System.DefaultWorkingDirectory)/nwrlc/" "https://$(target-storage).dfs.core.windows.net/$(target-container)/DBPP/" --include-path "config/postprocessConf.json;config/columnMapping.csv"  --recursive=true
+                  addSpnToEnvironment: true
+                  useGlobalConfig: true
+              - task: SSH@0
+                displayName: 'Run shell commands on Target machine'
+                inputs:
+                  sshEndpoint: 'targetvm'
+                  runOptions: 'commands'
+                  commands: |
+                    mkdir -p /home/datalake1/Environment/dev/dbpp/common; 
+                    mkdir -p /home/datalake1/Environment/dev/dbpp/nwrlc; 
+                    mkdir -p /home/datalake1/Environment/dev/dbpp/scalaApp;
+                  readyTimeout: '20000'
+              - task: CopyFilesOverSSH@0
+                displayName: 'Artifact Deploy to Azure VM'
+                inputs:
+                  sshEndpoint: 'targetvm'
+                  sourceFolder: '$(System.DefaultWorkingDirectory)/nwrlc'
+                  contents: |
+                    /code/bin/*.sh*
+                    /tws/*.shed*
+                  targetFolder: '/home/datalake1/Environment/dev/dbpp/nwrlc'
+                  readyTimeout: '20000'
+  - stage: 'Deploy Stage'
+    displayName: 'Deploy to Stage environment'
+    variables:
+      -group: 'VG-STG'
+    jobs:
+    - deployment: Deploy
+      displayName: 'Self hosted Agent job'
+      pool:
+       name: 'DBPP Self Hosted Agent Pool'
+       demands:
+          - agent.name -equals dbppselfhosted
+      environment: 'stg_env'
       strategy:
         runOnce:
           deploy:
