@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "azcopy login with SP"
+echo "azcopy login with SP :-" $clientidWK
 export AZCOPY_SPA_CLIENT_SECRET=$client-secret
 azcopy login --service-principal --application-id $clientid --tenant-id=$tenentid
 echo "azcopy Artifact to ADLS"
